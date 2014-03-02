@@ -1,5 +1,10 @@
 {
   "name": "mapny",
+  "homepage": "https://github.com/mustafar/mapny",
+  "author": {
+    "name": "Mustafa Rizvi",
+    "url": "mustafarizvi.com"
+  },
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -8,5 +13,15 @@
   "dependencies": {
     "express": "3.4.8",
     "jade": "*"
-  }
+  },
+  "keywords": [
+    "maps",
+    "osm",
+    "open street maps",
+    "leaflet",
+    "new york",
+    "new york city",
+    "ny",
+    "nyc",
+  ]
 }
