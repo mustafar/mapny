@@ -10,19 +10,6 @@ html
 
     script(type='text/javascript').
       var globals = {
-        
-        defaultMap: 'toner',
-
-        /* zoom */
-        minZoom: 12,
-        maxZoom: 18,
-        startZoom: 13,
-
-        /* lat lng */
-        boundNW: new L.LatLng('40.91757700000000', '-74.25909000000000'),
-        boundSE: new L.LatLng('40.47739900000000', '-73.70027200000000'),
-        startLat: '40.7507804',
-        startLng: '-73.9614897',
 
         'maps': {
 
@@ -44,7 +31,20 @@ html
             'attribution': 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.'
           },
 
-        }
+        },
+
+        defaultMap: 'toner',
+
+        /* zoom */
+        minZoom: 12,
+        maxZoom: 18,
+        startZoom: 13,
+
+        /* lat lng */
+        boundNW: new L.LatLng('40.91757700000000', '-74.25909000000000'),
+        boundSE: new L.LatLng('40.47739900000000', '-73.70027200000000'),
+        startLat: '40.7507804',
+        startLng: '-73.9614897'
 
       }
 
@@ -118,6 +118,7 @@ html
         var startPosition = new L.LatLng(mapState.lat,mapState.lng);
         map.setView(startPosition, mapState.zoom).addLayer(tileLayer);
         createMapSelector();
+        createTwitterLink();
 
         // set max bounds
         var bounds = new L.LatLngBounds(globals.boundNW, globals.boundSE);
@@ -172,6 +173,11 @@ html
           $("<option />", {value: mapName, text: text, selected: selected}).appendTo(select);
         }
         select.appendTo('#mapContainer');
+      }
+
+      function createTwitterLink() {
+        var twitter = $("<div id=\"twitMus\"><a target='_blank' href='http://twitter.com/mustafarizvi'>@mustafarizvi</a></div>");
+        twitter.appendTo('#mapContainer');
       }
 
       
