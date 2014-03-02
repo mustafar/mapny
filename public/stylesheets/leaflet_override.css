@@ -1,0 +1,4 @@
+/* toner */
+.toner.leaflet-container a {
+  color: 'yellow' !important;
+}

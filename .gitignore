@@ -1,0 +1,6 @@
+*.swp
+*.jpp
+*.jpep
+.DS_Store
+config.json
+node_modules

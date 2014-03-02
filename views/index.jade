@@ -1,0 +1,171 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/stylesheets/leaflet.css')
+    link(rel='stylesheet', href='/stylesheets/leaflet_override.css')
+    script(src='/javascripts/jquery.min.js')
+    script(src='/javascripts/leaflet.js')
+
+    script(type='text/javascript').
+      var globals = {
+        
+        defaultMap: 'toner',
+
+        /* zoom */
+        minZoom: 12,
+        maxZoom: 18,
+        startZoom: 13,
+
+        /* lat lng */
+        boundNW: new L.LatLng('40.91757700000000', '-74.25909000000000'),
+        boundSE: new L.LatLng('40.47739900000000', '-73.70027200000000'),
+        startLat: '40.7507804',
+        startLng: '-73.9614897',
+
+        'maps': {
+
+          'toner': {
+            'name': 'Toner',
+            'url': 'tile.stamen.com/toner',
+            'attribution': 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.'
+          },
+
+          'watercolor': {
+            'name': 'Watercolor',
+            'url': 'tile.stamen.com/watercolor',
+            'attribution': 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.'
+          },
+
+        }
+
+      }
+
+      // get map state
+      var mapState = {};
+      var currMap = !{JSON.stringify(currMap)};
+      var currZoom = !{JSON.stringify(currZoom)};
+      if (currZoom.charAt(0) === 'z') {
+        currZoom = currZoom.substring(1);
+      }
+      var currLat = !{JSON.stringify(currLat)};
+      var currLng = !{JSON.stringify(currLng)};
+      setMapState(currMap, currZoom, currLat, currLng);
+
+      function setMapState(currMap, currZoom, currLat, currLng) {
+        var numPrecision= 9;
+        var newMapState = {
+          'map':  String(currMap.length === 0? globals.defaultMap: currMap),
+          'zoom': Number(currZoom.length === 0? globals.startZoom: currZoom),
+          'lat': Number(currLat.length === 0? globals.startLat: currLat).toPrecision(numPrecision),
+          'lng': Number(currLng.length === 0? globals.startLng: currLng).toPrecision(numPrecision),
+        };
+        if (newMapState.map !== mapState.map ||
+            newMapState.zoom !== mapState.zoom ||
+            newMapState.lat !== mapState.lat ||
+            newMapState.lng !== mapState.lng) {
+          mapState = {
+            'map':  String(currMap.length === 0? globals.defaultMap: currMap),
+            'zoom': Number(currZoom.length === 0? globals.startZoom: currZoom),
+            'lat': Number(currLat.length === 0? globals.startLat: currLat).toPrecision(numPrecision),
+            'lng': Number(currLng.length === 0? globals.startLng: currLng).toPrecision(numPrecision),
+          };
+          changeUrl();
+        }
+      }
+
+      function changeUrl() {
+        var urlParamStr = '/' + mapState.map +
+          '/z' + mapState.zoom +
+          '/' + mapState.lat +
+          '/' + mapState.lng;
+
+        //var currUrl = document.location.href;
+        //var newUrl = currUrl.substring(0, currUrl.lastIndexOf('/')) + urlParamStr;
+        window.history.pushState(undefined, document.title, urlParamStr);
+      }
+
+  body
+    #mapContainer
+
+    script(type='text/javascript').
+      var map;
+
+      $(document).ready(function () {
+        // set map size
+        resizeMap();
+
+        // link map container
+        map = new L.Map('mapContainer');
+
+        // setup map
+        var url = 'http://{s}.' + 
+          globals.maps[mapState.map].url + 
+          '/{z}/{x}/{y}.png';
+        var attribution = globals.maps.toner.attribution;
+        var tileLayer = new L.TileLayer(url, {
+          maxZoom: globals.maxZoom, 
+          minZoom: globals.minZoom, 
+          attribution: attribution
+        });
+        var startPosition = new L.LatLng(mapState.lat,mapState.lng);
+        map.setView(startPosition, mapState.zoom).addLayer(tileLayer);
+        createMapSelector();
+
+        // set max bounds
+        var bounds = new L.LatLngBounds(globals.boundNW, globals.boundSE);
+        map.setMaxBounds(bounds);
+
+        // handle pan
+        map.on('moveend', function(e) {
+          var center = e.target.getCenter();
+          setMapState(mapState.map, mapState.zoom, center.lat, center.lng);
+        });
+
+        // handle zoom
+        map.on('zoomend', function(e) {
+          var zoom = e.target.getZoom();
+          setMapState(mapState.map, zoom, mapState.lat, mapState.lng);
+        });
+
+        // handle map select
+        $("#mapSelect").change(function() {
+          var selectedMap = $('#mapSelect').find(":selected").val();
+          setMapState(selectedMap, mapState.zoom, mapState.lat, mapState.lng);
+          window.location.reload();
+        });
+        
+        // handle loading finished
+        map.on('load', function(e) {
+          record(e.target.getBounds());
+        });
+      });
+
+      $(window).on("resize", function() {
+        resizeMap();
+      })
+      
+      function record(bounds) {
+        //todo log it!
+      }
+
+      function resizeMap() {
+        $("#mapContainer").height($(window).height()).width($(window).width());
+        $("#mapContainer").removeClass().addClass(mapState.map);
+      }
+
+      function createMapSelector() {
+        var select = $("<select id=\"mapSelect\" name=\"mapSelect\" />");
+        for (var mapName in globals.maps) {
+          var text = globals.maps[mapName].name;
+          var selected = false;
+          if (mapName === mapState.map) {
+            selected = true;
+          }
+          $("<option />", {value: mapName, text: text, selected: selected}).appendTo(select);
+        }
+        select.appendTo('#mapContainer');
+      }
+
+      
