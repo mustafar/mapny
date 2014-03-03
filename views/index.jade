@@ -31,6 +31,18 @@ html
             'attribution': 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.'
           },
 
+          'transport': {
+            'name': 'Transport',
+            'url': 'tile.thunderforest.com/transport',
+            'attribution': 'Map tiles by <a href="http://www.thunderforest.com/">Thunderforest</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under the <a href="http://opendatacommons.org/licenses/odbl/">ODbL</a>.'
+          },
+
+          'cycle': {
+            'name': 'Cycle',
+            'url': 'tile.thunderforest.com/cycle',
+            'attribution': 'Map tiles by <a href="http://www.thunderforest.com/">Thunderforest</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under the <a href="http://opendatacommons.org/licenses/odbl/">ODbL</a>.'
+          },
+
         },
 
         defaultMap: 'toner',
@@ -109,7 +121,7 @@ html
         var url = 'http://{s}.' + 
           globals.maps[mapState.map].url + 
           '/{z}/{x}/{y}.png';
-        var attribution = globals.maps.toner.attribution;
+        var attribution = globals.maps[mapState.map].attribution;
         var tileLayer = new L.TileLayer(url, {
           maxZoom: globals.maxZoom, 
           minZoom: globals.minZoom, 
